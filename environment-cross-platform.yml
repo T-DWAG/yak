@@ -1,0 +1,19 @@
+name: yolo11
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - pip
+  - pip:
+    - flask>=3.0.0
+    - werkzeug>=3.0.1
+    - pillow>=10.0.0
+    - imagehash>=4.3.1
+    - ultralytics>=8.0.0
+    - opencv-python>=4.6.0
+    - numpy>=1.23.0
+    - torch>=2.0.0
+    - torchvision>=0.15.0
+    - scipy>=1.13.0
+    - pywavelets>=1.6.0

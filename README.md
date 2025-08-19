@@ -15,18 +15,24 @@
 
 ```
 code/
-├── group2.py              # 核心处理脚本
-├── web_frontend/          # Web前端版本
-│   ├── app.py            # Flask后端
-│   ├── templates/        # HTML模板
-│   └── 使用说明.md        # 详细使用文档
-├── web_docker/           # Docker版本
-│   ├── Dockerfile        # 镜像构建
+├── group2.py                        # 核心处理脚本
+├── environment.yml                  # conda环境配置(完整)
+├── environment-cross-platform.yml   # conda环境配置(跨平台)
+├── setup_env.bat                    # Windows环境安装脚本
+├── setup_env.sh                     # Linux/Mac环境安装脚本
+├── models/                          # YOLO模型文件
+│   └── best.pt                     # 训练好的分类模型
+├── web_frontend/                    # Web前端版本
+│   ├── app.py                      # Flask后端
+│   ├── templates/                  # HTML模板
+│   └── 使用说明.md                  # 详细使用文档
+├── web_docker/                     # Docker版本
+│   ├── Dockerfile                  # 镜像构建
 │   ├── docker-compose.yml
-│   ├── start.bat         # Windows启动
-│   ├── start.sh          # Linux启动
-│   └── README.md         # Docker文档
-└── README.md             # 本文件
+│   ├── start.bat                   # Windows启动
+│   ├── start.sh                    # Linux启动
+│   └── README.md                   # Docker文档
+└── README.md                       # 本文件
 ```
 
 ## 快速开始
@@ -43,17 +49,30 @@ chmod +x start.sh && ./start.sh
 
 访问：http://localhost:5000
 
-### 方式二：本地运行
+### 方式二：一键环境安装
 
 ```bash
-# 1. 安装依赖
-conda create -n yolo11 python=3.9
-conda activate yolo11
-pip install -r web_frontend/requirements.txt
+# Windows
+setup_env.bat
 
-# 2. 启动服务
-cd web_frontend
-python app.py
+# Linux/Mac
+chmod +x setup_env.sh && ./setup_env.sh
+```
+
+### 方式三：手动环境配置
+
+```bash
+# 完全复制原环境
+conda env create -f environment.yml
+
+# 或跨平台安装
+conda env create -f environment-cross-platform.yml
+
+# 激活环境
+conda activate yolo11
+
+# 启动服务
+cd web_frontend && python app.py
 ```
 
 ### 方式三：命令行版本
