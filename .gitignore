@@ -22,6 +22,9 @@ data/
 *.onnx
 *.engine
 
+# 但允许models目录中的模型文件
+!models/*.pt
+
 # 数据集和图片
 *.zip
 *.jpg

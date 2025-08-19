@@ -8,7 +8,7 @@ services:
       - "5000:5000"
     volumes:
       # 挂载模型文件目录
-      - "../runs/classify/train26/weights:/app/models:ro"
+      - "../models:/app/models:ro"
       # 挂载数据目录（可选，用于持久化结果）
       - "./data/uploads:/app/uploads"
       - "./data/results:/app/results"

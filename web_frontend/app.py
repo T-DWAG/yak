@@ -13,7 +13,7 @@ sys.path.append('..')
 
 # 修复模型路径
 import group2
-group2.YOLO_MODEL_PATH = r"..\..\runs\classify\train26\weights\best.pt"
+group2.YOLO_MODEL_PATH = r"..\models\best.pt"
 
 from group2 import (
     load_yolo_model, 

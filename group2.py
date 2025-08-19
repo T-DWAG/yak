@@ -20,7 +20,7 @@ OUTPUT_DIR = "similar_photos_class2"  # 输出目录
 HASH_SIZE = 8  # 哈希大小（8=64位哈希）
 HASH_THRESHOLD = 5  # 汉明距离阈值（≤5视为相似）
 SUPPORTED_FORMATS = ('.png', '.jpg', '.jpeg', '.bmp', '.tiff', '.webp')  # 支持的图片格式
-YOLO_MODEL_PATH = r"..\runs\classify\train26\weights\best.pt"  # YOLO模型路径
+YOLO_MODEL_PATH = r"models\best.pt"  # YOLO模型路径
 CLASS2_CONFIDENCE_THRESHOLD = 0.5  # class2置信度阈值
 
 def load_yolo_model():
