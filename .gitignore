@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 项目特定文件
+similar_photos_class2/
+uploads/
+results/
+data/
+
+# 模型文件（太大）
+*.pt
+*.pth
+*.onnx
+*.engine
+
+# 数据集和图片
+*.zip
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.tiff
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+.dockerignore
+
+# 系统文件
+.env
+.env.local

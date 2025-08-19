@@ -1,0 +1,4 @@
+flask==3.0.0
+werkzeug==3.0.1
+pillow>=10.0.0
+imagehash>=4.3.1

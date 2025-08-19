@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  yak-image-analyzer:
+    build: .
+    container_name: yak-image-analyzer
+    ports:
+      - "5000:5000"
+    volumes:
+      # 挂载模型文件目录
+      - "../runs/classify/train26/weights:/app/models:ro"
+      # 挂载数据目录（可选，用于持久化结果）
+      - "./data/uploads:/app/uploads"
+      - "./data/results:/app/results"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - FLASK_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G

@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>牦牛图片相似度分析系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: #f8f9ff;
+        }
+        
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+        
+        .upload-area.dragover {
+            background: #e8ebff;
+            border-color: #4c51bf;
+        }
+        
+        .upload-icon {
+            font-size: 60px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .upload-text {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+        
+        .upload-hint {
+            color: #718096;
+            font-size: 0.9em;
+        }
+        
+        #fileInput {
+            display: none;
+        }
+        
+        .file-list {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-right: 15px;
+        }
+        
+        .file-name {
+            flex: 1;
+            color: #2d3748;
+        }
+        
+        .file-size {
+            color: #718096;
+            font-size: 0.9em;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        
+        .progress-section {
+            display: none;
+            margin-top: 30px;
+            padding: 30px;
+            background: #f7fafc;
+            border-radius: 15px;
+        }
+        
+        .progress-title {
+            font-size: 1.2em;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar-container {
+            background: #e2e8f0;
+            height: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .status-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .status-label {
+            color: #718096;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .status-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .results-section {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .results-title {
+            font-size: 1.5em;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .groups-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .group-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        
+        .group-card:hover {
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            transform: translateY(-5px);
+        }
+        
+        .group-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .group-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        
+        .group-count {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+        
+        .group-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .preview-image {
+            width: 100%;
+            height: 80px;
+            background: #f7fafc;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e0;
+            font-size: 0.8em;
+        }
+        
+        .error-message {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐂 牦牛图片相似度分析系统</h1>
+            <p>基于 YOLO 分类和感知哈希的智能图片分组工具</p>
+        </div>
+        
+        <div class="main-card">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📁</div>
+                <div class="upload-text">点击或拖拽上传 ZIP 文件</div>
+                <div class="upload-hint">支持多个 ZIP 文件同时上传，最大 500MB</div>
+                <input type="file" id="fileInput" multiple accept=".zip">
+            </div>
+            
+            <div class="file-list" id="fileList"></div>
+            
+            <div class="button-group">
+                <button class="btn btn-secondary" onclick="clearFiles()">清除文件</button>
+                <button class="btn btn-primary" id="startBtn" onclick="startProcessing()" disabled>
+                    开始分析
+                </button>
+            </div>
+            
+            <div class="progress-section" id="progressSection">
+                <div class="progress-title" id="progressTitle">准备处理...</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar">0%</div>
+                </div>
+                <div class="status-info">
+                    <div class="status-card">
+                        <div class="status-label">总图片数</div>
+                        <div class="status-value" id="totalImages">0</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">Class2 图片</div>
+                        <div class="status-value" id="class2Images">0</div>
+                    </div>
+                    <div class="status-card">
+                        <div class="status-label">相似组数</div>
+                        <div class="status-value" id="groupsFound">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+            
+            <div class="results-section" id="resultsSection">
+                <div class="results-title">
+                    <span>分组结果</span>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="downloadCSV()">
+                            下载CSV记录
+                        </button>
+                        <button class="btn btn-primary" onclick="downloadResults()">
+                            下载所有结果
+                        </button>
+                    </div>
+                </div>
+                <div class="groups-container" id="groupsContainer"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let selectedFiles = [];
+        let statusInterval = null;
+        
+        // 文件上传区域事件
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        
+        uploadArea.addEventListener('click', () => fileInput.click());
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+        
+        function handleFiles(files) {
+            // 累加文件而不是替换
+            const newFiles = Array.from(files).filter(f => f.name.endsWith('.zip'));
+            
+            if (newFiles.length === 0) {
+                alert('请选择 ZIP 文件');
+                return;
+            }
+            
+            // 检查重复文件
+            const existingNames = selectedFiles.map(f => f.name);
+            newFiles.forEach(file => {
+                if (!existingNames.includes(file.name)) {
+                    selectedFiles.push(file);
+                }
+            });
+            
+            displayFiles();
+            document.getElementById('startBtn').disabled = false;
+        }
+        
+        function displayFiles() {
+            const fileList = document.getElementById('fileList');
+            fileList.style.display = 'block';
+            fileList.innerHTML = '';
+            
+            if (selectedFiles.length === 0) {
+                fileList.style.display = 'none';
+                document.getElementById('startBtn').disabled = true;
+                return;
+            }
+            
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-icon">📦</div>
+                    <div class="file-name">${file.name}</div>
+                    <div class="file-size">${formatFileSize(file.size)}</div>
+                    <button onclick="removeFile(${index})" style="
+                        background: #e53e3e;
+                        color: white;
+                        border: none;
+                        padding: 5px 10px;
+                        border-radius: 5px;
+                        cursor: pointer;
+                        margin-left: 10px;
+                    ">删除</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+        
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            displayFiles();
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+        
+        function clearFiles() {
+            if (selectedFiles.length > 0 && !confirm('确定要清除所有已选择的文件吗？')) {
+                return;
+            }
+            selectedFiles = [];
+            fileInput.value = '';
+            document.getElementById('fileList').style.display = 'none';
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+        
+        async function startProcessing() {
+            if (selectedFiles.length === 0) return;
+            
+            const formData = new FormData();
+            selectedFiles.forEach(file => {
+                formData.append('files', file);
+            });
+            
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('progressSection').style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    startStatusPolling();
+                } else {
+                    showError(result.error || '上传失败');
+                }
+            } catch (error) {
+                showError('网络错误：' + error.message);
+            }
+        }
+        
+        function startStatusPolling() {
+            statusInterval = setInterval(async () => {
+                try {
+                    const response = await fetch('/status');
+                    const status = await response.json();
+                    
+                    updateProgress(status);
+                    
+                    if (!status.is_processing) {
+                        clearInterval(statusInterval);
+                        
+                        if (status.error) {
+                            showError(status.error);
+                        } else {
+                            showSuccess('处理完成！');
+                            loadResults();
+                        }
+                    }
+                } catch (error) {
+                    clearInterval(statusInterval);
+                    showError('状态更新失败');
+                }
+            }, 1000);
+        }
+        
+        function updateProgress(status) {
+            document.getElementById('progressTitle').textContent = status.current_step || '处理中...';
+            document.getElementById('progressBar').style.width = status.progress + '%';
+            document.getElementById('progressBar').textContent = status.progress + '%';
+            document.getElementById('totalImages').textContent = status.total_images;
+            document.getElementById('class2Images').textContent = status.class2_images;
+            document.getElementById('groupsFound').textContent = status.groups_found;
+        }
+        
+        async function loadResults() {
+            try {
+                const response = await fetch('/results');
+                const data = await response.json();
+                
+                if (data.groups && data.groups.length > 0) {
+                    displayResults(data.groups);
+                } else {
+                    showError('没有找到相似图片组');
+                }
+            } catch (error) {
+                showError('加载结果失败');
+            }
+        }
+        
+        function displayResults(groups) {
+            const container = document.getElementById('groupsContainer');
+            container.innerHTML = '';
+            
+            groups.forEach(group => {
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                
+                // 生成图片预览
+                const imagePreview = group.images.slice(0, 3).map(imgPath => 
+                    `<img src="/image/${imgPath}" style="
+                        width: 100%;
+                        height: 80px;
+                        object-fit: cover;
+                        border-radius: 5px;
+                    " alt="preview" onerror="this.style.display='none'">`
+                ).join('');
+                
+                card.innerHTML = `
+                    <div class="group-header">
+                        <div class="group-name">${group.name}</div>
+                        <div class="group-count">${group.count} 张</div>
+                    </div>
+                    <div class="group-preview">
+                        ${imagePreview}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            
+            document.getElementById('resultsSection').style.display = 'block';
+        }
+        
+        async function downloadResults() {
+            window.location.href = '/download_results';
+        }
+        
+        async function downloadCSV() {
+            window.location.href = '/download_csv';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = '❌ ' + message;
+            errorDiv.style.display = 'block';
+            document.getElementById('progressSection').style.display = 'none';
+            document.getElementById('startBtn').disabled = false;
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = '✅ ' + message;
+            successDiv.style.display = 'block';
+            document.getElementById('startBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>
